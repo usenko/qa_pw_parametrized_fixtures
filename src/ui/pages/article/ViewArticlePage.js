@@ -57,4 +57,21 @@ export class ViewArticlePage {
       }
     });
   }
+
+  async assertArticleTagsAreNotVisible(tags) {
+    await this.step(`Assert the article has no tags`, async () => {
+      for (let i = 0; i < tags.length; i++) {
+        await expect(this.tagListItem(tags[i])).toBeHidden();
+      }
+    });
+  }
+
+  async assertArticlePageOpened(urlPart) {
+    await this.step(
+      `Assert that Article page with path '${urlPart}' is opened`,
+      async () => {
+        await expect(this.page).toHaveURL(new RegExp(`/article/${urlPart}`));
+      },
+    );
+  }
 }

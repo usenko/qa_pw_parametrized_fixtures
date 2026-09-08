@@ -8,7 +8,7 @@ export class CreateArticlePage {
     this.textField = page.getByPlaceholder('Write your article (in markdown)');
     this.tagField = page.getByPlaceholder('Enter tags');
     this.publishArticleButton = page.getByRole('button', {
-      name: 'Publish Article',
+      name: /Publish Article|Update Article/,
     });
     this.errorMessage = page.getByRole('list').nth(1);
   }
@@ -17,9 +17,10 @@ export class CreateArticlePage {
     return await testStep(title, stepToRun, this.userId);
   }
 
-  async open() {
+  async open(slug = '') {
+    const targetUrl = slug ? `/editor/${slug}` : '/editor';
     await this.step(`Open 'Create article' page`, async () => {
-      await this.page.goto('/editor');
+      await this.page.goto(targetUrl);
     });
   }
 
@@ -46,6 +47,16 @@ export class CreateArticlePage {
       for (let i = 0; i < tags.length; i++) {
         await this.tagField.fill(tags[i]);
         await this.page.keyboard.press('Enter');
+      }
+    });
+  }
+
+  async removeAllTags() {
+    await this.step(`Remove all tags`, async () => {
+      const tagItem = this.page.locator('.tag-list .ion-close-round');
+      const count = await tagItem.count();
+      for (let i = 0; i < count; i++) {
+        await tagItem.first().click();
       }
     });
   }
