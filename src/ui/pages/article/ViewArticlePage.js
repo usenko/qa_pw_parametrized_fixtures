@@ -29,6 +29,27 @@ export class ViewArticlePage {
     });
   }
 
+  async clickFollowButton(username) {
+    await this.step(`Click the 'Follow ${username}' button`, async () => {
+      const responsePromise = this.page.waitForResponse(
+        response => {
+          const lowerCaseUrl = response.url().toLowerCase();
+          const targetPattern = `profiles/${username.toLowerCase()}/follow`;
+
+          return (
+            lowerCaseUrl.includes(targetPattern) &&
+            response.request().method() === 'POST' &&
+            response.status() === 200
+          );
+        },
+        { timeout: 1000 },
+      );
+      await this.getFollowButton(username).click();
+      await responsePromise;
+      await expect(this.getUnfollowButton(username)).toBeVisible();
+    });
+  }
+
   async assertArticleTitleIsVisible(title) {
     await this.step(`Assert the article has correct title`, async () => {
       await expect(this.articleTitleHeader).toContainText(title);
