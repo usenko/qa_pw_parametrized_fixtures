@@ -8,11 +8,25 @@ export class ViewArticlePage {
   }
 
   authorLinkInArticleHeader(username) {
-    return this.page.getByRole('link', { username }).first();
+    return this.page.getByRole('link', { name: username }).first();
   }
 
   tagListItem(tagName) {
     return this.page.getByRole('listitem').filter({ hasText: tagName });
+  }
+
+  getFollowButton(username) {
+    return this.page
+      .locator('.article-meta')
+      .getByRole('button', { hasText: `Follow ${username}` })
+      .first();
+  }
+
+  getUnfollowButton(username) {
+    return this.page
+      .locator('.article-meta')
+      .getByRole('button', { hasText: `Unfollow ${username}` })
+      .first();
   }
 
   async step(title, stepToRun) {
@@ -23,7 +37,7 @@ export class ViewArticlePage {
     return this.page.url();
   }
 
-  async open(url) {
+  async open(url = '/') {
     await this.step(`Open 'View Article' page`, async () => {
       await this.page.goto(url);
     });
